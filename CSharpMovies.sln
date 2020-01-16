@@ -3,7 +3,12 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMovies", "CSharpMovies.csproj", "{8702FC21-154C-468A-8234-326B0CDADD94}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMovies", "CSharpMovies.csproj", "{8702FC21-154C-468A-8234-326B0CDADD94}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{16A47DB8-D251-452A-855A-44A905846663}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

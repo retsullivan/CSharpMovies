@@ -1,10 +1,8 @@
-﻿using CSharpMovies.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Threading.Tasks;
+
 
 namespace CSharpMovies.Data
 {
@@ -18,13 +16,14 @@ namespace CSharpMovies.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(
-                @"Server=(localdb)\mssqllocaldb;Database=Blogging;Integrated Security=True");
+            base.OnConfiguring(optionsBuilder);
+           // optionsBuilder.UseSqlServer(
+           // @"Server=(localdb)\mssqllocaldb;Database=master;Integrated Security=True");
         }
-
 
     }
 
+    //[Table("Movies", Schema = "dbo")]
     public class Movie
     {
         public int Id { get; set; }

@@ -4,7 +4,7 @@ export class MovieRepository{
 
     url = "https://localhost:44366/api";
     config = {
-        headers:{ }
+        headers: {"Content-Type":"application/json"}
     };
 
     getMovies() {
@@ -31,7 +31,7 @@ export class MovieRepository{
 
     addMovie(movie){
         return new Promise((resolve,reject) =>{
-            axios.post(`${this.url}/Movies/Add`,movie,this.config)
+            axios.post(`${this.url}/Movies/Create`, movie, this.config)
                 .then(x=> resolve(x.data))
                 .catch(x=>{
                     alert(x);
@@ -42,7 +42,7 @@ export class MovieRepository{
 
     editMovie(id, movie){
         return new Promise((resolve,reject) =>{
-            axios.put(`${this.url}/Movies/Edit/${id}`,movie,this.config)
+            axios.put(`${this.url}/Movies/Edit/${id}`, movie, this.config)
                 .then(x=> resolve(x.data))
                 .catch(x=>{
                     alert(x);

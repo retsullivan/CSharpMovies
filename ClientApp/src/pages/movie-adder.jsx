@@ -13,32 +13,41 @@ import {withRouter} from 'react-router-dom';
 export class MovieAdder extends React.Component {
 
     movieRepository = new MovieRepository();
-    newMovie = new Movie();
   
-    state = {movieId:"",
-    title:"",
-    genre:"",
-    director:"",
-    releaseYear:"",
-    runTime:""};
+    state = {
+        movieId:0,
+        title:"",
+        genre:"",
+        director:"",
+        releaseYear:"",
+        runtime: "",
+        movieCode: 0,
+    };
       
     componentDidMount(){
        
     }
 
-    addMovie(){
+    add(){
         var onSaveComplete = () => {
-            this.setState({ movieId:"",
-                            title:"",
-                            genre:"",
-                            director:"",
-                            releaseYear:"",
-                            runTime:""});
+            this.setState({
+                movieId:0,
+                title:"",
+                genre:"",
+                director:"",
+                releaseYear:"",
+                runtime:"",
+                movieCode:0});
             this.props.history.push(`/movies`);
            
         };
-        this.movieRepository.addMovie(new Movie(this.state.movieId,this.state.title,this.state.genre,this.state.director,
-                                                this.state.releaseYear, this.state.runTime))
+        this.movieRepository.addMovie(new Movie(this.state.movieId,
+                                                this.state.title,
+                                                this.state.genre,
+                                                this.state.director,
+                                                this.state.releaseYear,
+                                                this.state.runtime,
+                                                this.state.movieCode,))
                             .then(onSaveComplete);
     }
 
@@ -94,30 +103,30 @@ export class MovieAdder extends React.Component {
                             </div>
                             <div className="form-group">
                                 <div className="d-flex"> 
-                                    <input type="text"
+                                    <input type="number"
                                     id="newMovieReleaseYear"
                                     name="newMovieReleaseYear"
                                     className="form-control" 
                                     placeholder="Enter the release year"
                                     value={this.state.releaseYear}
-                                    onChange={e =>this.setState({releaseYear:e.target.value})}
+                                    onChange={e =>this.setState({releaseYear:new Number(e.target.value)})}
                                     />    
                                 </div>         
                             </div>
                             <div className="form-group">
                                 <div className="d-flex"> 
-                                    <input type="text"
+                                    <input type="number"
                                     id="newMovieRuntime"
-                                    name="newMovieRUntime"
+                                    name="newMovieRuntime"
                                     className="form-control" 
                                     placeholder="Enter the runtime"
-                                    value={this.state.runTime}
-                                    onChange={e =>this.setState({runTime:e.target.value})}
+                                    value={this.state.runtime}
+                                    onChange={e =>this.setState({runtime:new Number(e.target.value)})}
                                     />    
                                 </div>         
                             </div>
                     </form>        
-                    <button className="btn btn-info btn-block" id="add-movie-button" onClick={e =>this.addMovie()}> Add </button>
+                    <button className="btn btn-info btn-block" id="add-movie-button" onClick={e =>this.add()}> Add </button>
                     </div>
                 </div>
             </div>

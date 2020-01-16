@@ -36,7 +36,7 @@ export class MovieDetails extends React.Component {
             this.props.history.push(`/movies`); 
         };
         
-        this.movieRepository.deleteMovie(this.state.movie.id)
+        this.movieRepository.deleteMovie(this.state.movie.movieCode)
                             .then(onSaveComplete);
     }
 
@@ -97,7 +97,7 @@ export class MovieDetails extends React.Component {
                                     <td id='movie-detail-genre'>{this.state.movie.genre}</td>
                                     <td id = 'movie-detail-director'>{this.state.movie.director}</td>
                                     <td id = 'movie-detail-releaseYear'>{this.state.movie.releaseYear}</td>
-                                    <td id='movie-detail-runTime'>{this.state.movie.runTime}</td>
+                                    <td id='movie-detail-runTime'>{this.state.movie.runtime}</td>
                                 
                                     <td> 
                                         {/* <div className="btn btn-outline-info  detail-button">Edit</div>  */}

@@ -31,7 +31,7 @@ export class MovieEditor extends React.Component {
             this.setState({});
             this.props.history.push('/movies'); 
         };
-        this.movieRepository.editMovie(this.state.movie.id, this.state.movie)
+        this.movieRepository.editMovie(this.state.movie.movieCode, this.state.movie)
                             .then(onSaveComplete);
     }
 
@@ -119,25 +119,25 @@ export class MovieEditor extends React.Component {
                             </div>
                             <div className="form-group">
                                 <div className="d-flex"> 
-                                    <input type="text"
+                                    <input type="number"
                                     id="newMovieReleaseYear"
                                     name="newMovieReleaseYear"
                                     className="form-control" 
                                     placeholder= "release year"
                                     value={this.state.movie.releaseYear}
-                                    onChange={e =>this.setState({movie:{...this.state.movie, releaseYear:e.target.value}})}
+                                                    onChange={e => this.setState({ movie: { ...this.state.movie, releaseYear: new Number(e.target.value)}})}
                                     />    
                                 </div>         
                             </div>
                             <div className="form-group">
                                 <div className="d-flex"> 
-                                    <input type="text"
+                                    <input type="number"
                                     id="newMovieRunTime"
                                     name="newMovieRunTimer"
                                     className="form-control" 
                                     placeholder= "run time"
-                                    value={this.state.movie.runTime}
-                                    onChange={e =>this.setState({movie:{...this.state.movie, runTime:e.target.value}})}
+                                    value={this.state.movie.runtime}
+                                                    onChange={e => this.setState({ movie: { ...this.state.movie, runtime: new Number(e.target.value)}})}
                                     />    
                                 </div>         
                             </div>

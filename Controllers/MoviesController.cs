@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Http;
 using System.Web.Http.Description;
 using CSharpMovies.Data;
 using CSharpMovies.Models;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -18,11 +16,13 @@ using RouteAttribute = Microsoft.AspNetCore.Mvc.RouteAttribute;
 
 namespace CSharpMovies.Controllers
 {
+    [ApiController]
+    [ApiConventionType(typeof(DefaultApiConventions))]
     public class MoviesController : Controller
     {
 
         private readonly ILogger<MoviesController> _logger;
-        private readonly MovieContext _context;
+        private MovieContext _context;
 
         public MoviesController(ILogger<MoviesController> logger, Data.MovieContext context)
         {
@@ -33,28 +33,19 @@ namespace CSharpMovies.Controllers
       
         [HttpGet]
         [Route("api/Movies")]
-        public IQueryable<Movie> GetMovies()
+        public IActionResult GetMovies()
         {
-            var movies = from movie in _context.Movies
-                        select new Movie()
-                        {
-                            Id = movie.Id,
-                            MovieCode = movie.MovieCode,
-                            Title = movie.Title,
-                            Genre = movie.Genre,
-                            Director = movie.Director,
-                            ReleaseYear = movie.ReleaseYear,
-                            Runtime = movie.Runtime
-                        };
+            var movies = _context.Movies.Where(e => e.isDeleted == false && e.isCurrent == true)
+                                        .ToList();
 
-            return movies;
+            return Ok(movies);
         }
 
         
         // GET: Movie/Details/5
        [HttpGet]
        [Route("api/Movies/{id}")]
-        [ResponseType(typeof(MovieDetailDTO))]
+       [ResponseType(typeof(MovieDetailDTO))]
         public async Task<IActionResult> GetMovie(int id)
         {
             var movie = await this._context.Movies.Where(e => e.isDeleted == false)
@@ -68,6 +59,7 @@ namespace CSharpMovies.Controllers
                                                     Director = movie.Director,
                                                     ReleaseYear = movie.ReleaseYear,
                                                     Runtime = movie.Runtime
+
                                                 }).SingleOrDefaultAsync(m => m.Id == id);                
                 
 
@@ -85,27 +77,32 @@ namespace CSharpMovies.Controllers
 
         // POST: Movie/Create
         [HttpPost]
-        [Route("api/Movies/Add")]
-      
-        public IActionResult Add(Movie newMovie)
+        [Route("api/Movies/Create")]
+        public IActionResult Create(Movie newMovie)
         {
-            try
-            {
 
-                var newCode = this._context.Movies.Select(m => m.MovieCode).Max() + 1;
-
-                newMovie.MovieCode = newCode;
-                newMovie.StartTime = DateTime.Now;
-                newMovie.EndTime = DateTime.MaxValue;
-
-                this._context.Movies.Add(newMovie);
-
-                return Ok();
-            }
-            catch
+            if (newMovie == null)
             {
                 return View("Error");
             }
+            else 
+            {
+                var newCode = this._context.Movies.Select(m => m.MovieCode).Max() + 1;
+
+                newMovie.Id = 0;
+                newMovie.MovieCode = newCode;
+                newMovie.StartTime = DateTime.Now;
+                newMovie.EndTime = DateTime.MaxValue;
+                newMovie.isCurrent = true;
+                newMovie.isDeleted = false;
+
+                this._context.Movies.Add(newMovie);
+                this._context.SaveChanges();
+
+                return Ok();
+            }
+           
+          
         }
         
 
@@ -113,26 +110,32 @@ namespace CSharpMovies.Controllers
         [HttpPut]
         [Route("api/Movies/Edit/{id}")]
 
-        public IActionResult Edit(int id, Movie editedMovie) {
+        public IActionResult Edit(Movie movieToUpdate) 
+        {
 
-            if (this._context.Movies.Where(l => l.MovieCode == id).Any())
+            if (this._context.Movies.Where(l => l.MovieCode == movieToUpdate.MovieCode).Any())
             {
                
-            var movieCode = id;
-            var oldMovieInfo = this._context.Movies.Where(e => e.MovieCode == movieCode)
-                                                   .Where(e => e.isCurrent == true)
-                                                   .FirstOrDefault();
+                var movieCode = movieToUpdate.MovieCode;
+                var oldMovieInfo = this._context.Movies.Where(e => e.MovieCode == movieCode)
+                                                       .Where(e => e.isCurrent == true)
+                                                       .FirstOrDefault();
+                oldMovieInfo.EndTime = DateTime.Now;
+                oldMovieInfo.isCurrent = false;
 
-            oldMovieInfo.EndTime = DateTime.Now;
-            oldMovieInfo.isCurrent = false;
+                movieToUpdate.Id = 0;
+                movieToUpdate.StartTime = oldMovieInfo.EndTime;
+                movieToUpdate.EndTime = DateTime.MaxValue;
+                movieToUpdate.MovieCode = oldMovieInfo.MovieCode;
+                movieToUpdate.isCurrent = true;
+                movieToUpdate.isDeleted = false;
+            
+                this._context.Movies.Add(movieToUpdate);
 
-            editedMovie.StartTime = oldMovieInfo.EndTime;
-            editedMovie.MovieCode = oldMovieInfo.MovieCode;
+                this._context.SaveChanges();
+            
 
-
-            this._context.Movies.Add(editedMovie);
-
-            return Ok();
+                return Ok();
             }
 
             else
@@ -148,21 +151,23 @@ namespace CSharpMovies.Controllers
 
         public IActionResult Delete(int id)
         {
-           
+
             if (this._context.Movies.Where(l => l.MovieCode == id).Any())
             {
-
                 var movieCode = id;
-                
+
                 foreach (Movie deleteMovie in this._context.Movies.Where(l => l.MovieCode == id))
                 {
                     deleteMovie.isDeleted = true;
                 }
+                this._context.SaveChanges();
                 return Ok();
-
             }
-            
-            return View("Error");
+            else
+            {
+
+                return View("Error");
+            }
             
         }
     }
